@@ -111,43 +111,56 @@
     </div>
 
     <script>
-        let lastResult = "";
+    let lastResult = "";
 
-        function calculatePanels() {
-            let fullname   = document.getElementById("fullname").value;
-            let location   = document.getElementById("location").value;
-            let placeType  = document.getElementById("placeType").value;
-            let consumption= document.getElementById("consumption").value;
-            let panelType  = document.getElementById("panelType").value;
-            let battery    = document.getElementById("battery").value;
+    function calculatePanels() {
+        let fullname   = document.getElementById("fullname").value;
+        let location   = document.getElementById("location").value;
+        let placeType  = document.getElementById("placeType").value;
+        let consumption= document.getElementById("consumption").value;
+        let panelType  = document.getElementById("panelType").value;
+        let battery    = document.getElementById("battery").value;
 
-            let panelCapacity = (panelType == "550") ? 66 : 84;
-            let panelPrice    = (panelType == "550") ? 3800 : 5500;
-            let panels        = Math.ceil(consumption / panelCapacity);
-            let totalCost     = panels * panelPrice;
-            if (battery == "yes") totalCost += 10000;
+        // إنتاجية اللوح حسب النوع (بالك.و.س شهريًا)
+        let panelCapacity;
+        let panelPrice;
 
-            lastResult =
-                "👤 الاسم: " + fullname +
-                "\n📍 الموقع: " + location +
-                "\n🏠 نوع المكان: " + placeType +
-                "\n🔋 الاستهلاك الشهري: " + consumption + " ك.و.س" +
-                "\n☀️ عدد الألواح المطلوبة: " + panels +
-                "\n💰 التكلفة الإجمالية: " + totalCost + " جنيه" +
-                "\n⚡ بطارية: " + battery;
-
-            document.getElementById("result").innerText = lastResult;
+        if (panelType == "550") {
+            panelCapacity = 82;   // تقريبًا 0.55 × 5 ساعات × 30 يوم
+            panelPrice    = 17860; // السعر الجديد للوح 550 واط
+        } else {
+            panelCapacity = 105;  // تقريبًا 0.7 × 5 ساعات × 30 يوم
+            panelPrice    = 17860; // السعر الجديد للوح 700 واط
         }
 
-        function sendToOwner() {
-            if (lastResult === "") {
-                alert("⚠️ لازم تحسب الأول قبل ما تبعت البيانات.");
-                return;
-            }
-            let phoneNumber = "01201984921"; // غيري الرقم لرقمك الحقيقي
-            let url = "https://wa.me/" + phoneNumber + "?text=" + encodeURIComponent("🚨 بيانات عميل:\n" + lastResult);
-            window.open(url, "_blank");
+        // حساب عدد الألواح والتكلفة
+        let panels    = Math.ceil(consumption / panelCapacity);
+        let totalCost = panels * panelPrice;
+        if (battery == "yes") totalCost += 10000;
+
+        // حفظ النتيجة للعرض وللإرسال
+        lastResult =
+            "👤 الاسم: " + fullname +
+            "\n📍 الموقع: " + location +
+            "\n🏠 نوع المكان: " + placeType +
+            "\n🔋 الاستهلاك الشهري: " + consumption + " ك.و.س" +
+            "\n☀️ عدد الألواح المطلوبة: " + panels +
+            "\n💰 التكلفة الإجمالية: " + totalCost.toLocaleString() + " جنيه" +
+            "\n⚡ بطارية: " + battery;
+
+        document.getElementById("result").innerText = lastResult;
+    }
+
+    function sendToOwner() {
+        if (lastResult === "") {
+            alert("⚠️ لازم تحسب الأول قبل ما تبعت البيانات.");
+            return;
         }
-    </script>
+        let phoneNumber = "01201984921"; // غيري الرقم لرقمك الحقيقي
+        let url = "https://wa.me/" + phoneNumber + "?text=" + encodeURIComponent("🚨 بيانات عميل:\n" + lastResult);
+        window.open(url, "_blank");
+    }
+</script>
+
 </body>
 </html>
